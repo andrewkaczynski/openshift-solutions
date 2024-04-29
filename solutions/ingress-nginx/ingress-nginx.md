@@ -69,9 +69,9 @@ rules:
       - get
       - create
   - apiGroups: ["security.openshift.io"]
-	resources: ["securitycontextconstraints"]
-	resourceNames: ["privileged"]
-	verbs: ["use"]
+    resources: ["securitycontextconstraints"]
+    resourceNames: ["privileged"]
+    verbs: ["use"]
 {{- end }}
 
 #save 
