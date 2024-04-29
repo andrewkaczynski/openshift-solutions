@@ -106,7 +106,7 @@ controller:
         digest: <sha256>
       nodeSelector:
         kubernetes.io/os: linux
-		ingress-controller=ingress-nginx
+        ingress-controller=ingress-nginx
 ```
 
 4. Label nodes where ingress-nginx PODs will be scheduled:
