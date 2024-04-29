@@ -25,7 +25,7 @@ The following images should be transferred to locally available registry if clus
 - registry.k8s.io/ingress-nginx/controller:v1.10.0
 - registry.k8s.io/ingress-nginx/kube-webhook-certgen:v1.4.1
 
-The instruction of how to transfer images to local repository is available at: 
+The instruction of how to transfer images to local repository is available at: [Copy images from public registries to local one](../podman/podman-copy-images.md)
 
 ## Installation
 
