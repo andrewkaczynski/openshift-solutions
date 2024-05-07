@@ -73,8 +73,42 @@ rules:
     resourceNames: ["privileged"]
     verbs: ["use"]
 {{- end }}
+#save
 
-#save 
+vi templates/ssc.yaml
+
+# Create SCC for IC resources
+kind: SecurityContextConstraints
+apiVersion: security.openshift.io/v1
+metadata:
+  name: {{ include "ingress-nginx.fullname" . }}-scc
+allowPrivilegedContainer: false
+runAsUser:
+  type: MustRunAs
+  uid: 101
+seLinuxContext:
+  type: MustRunAs
+fsGroup:
+  type: MustRunAs
+supplementalGroups:
+  type: MustRunAs
+allowHostNetwork: false
+allowHostPID: false
+allowHostPorts: false
+allowHostDirVolumePlugin: false
+allowHostIPC: false
+readOnlyRootFilesystem: false
+seccompProfiles:
+- runtime/default
+volumes:
+- secret
+requiredDropCapabilities:
+- ALL
+users:
+- system:serviceaccount:{{ .Release.Namespace }}:{{ include "ingress-nginx.serviceAccountName" . }}
+allowedCapabilities:
+- NET_BIND_SERVICE
+#save
 ```
 
 3. Prepare the custom values.yaml for the installation:
@@ -87,7 +121,8 @@ controller:
     registry: <local_registry_url>
     image: ingress-nginx/controller
     tag: "v1.10.0"
-    digest: <sha256>
+    digest: ""
+  allowSnippetAnnotations: true
   kind: DaemonSet
   nodeSelector:
     ingress-controller: ingress-nginx
@@ -103,10 +138,10 @@ controller:
         registry: <local_registry_url>
         image: ingress-nginx/kube-webhook-certgen
         tag: v1.4.1
-        digest: <sha256>
+        digest: ""
       nodeSelector:
         kubernetes.io/os: linux
-        ingress-controller=ingress-nginx
+        ingress-controller: ingress-nginx
 ```
 
 4. Label nodes where ingress-nginx PODs will be scheduled:
