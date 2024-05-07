@@ -185,9 +185,9 @@ metadata:
 spec:
   ports:
   - name: http
-    port: 8080
+    port: 80
     protocol: TCP
-    targetPort: 80
+    targetPort: 8080
   selector:
     app: httpbin
   type: ClusterIP
@@ -207,10 +207,9 @@ spec:
         app: httpbin
     spec:
       containers:
-        image: ennethreitz/httpbin
-		tag: latest
-        name: httpbin
-
+      - name: httpbin
+        image: mccutchen/go-httpbin:latest
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -227,7 +226,7 @@ spec:
               service:
                 name: httpbin
                 port:
-                  number: 8080
+                  number: 80
             path: /
 ```
 
