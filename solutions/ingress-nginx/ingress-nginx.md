@@ -1,31 +1,34 @@
 # Ingress-Nginx
 
-This solutions shows how to install ingress-nginx, an open source ingress-controller on OpenShift cluster
+This solution shows how to install the ingress-nginx, an open source ingress-controller on the OpenShift cluster
 
 [https://github.com/kubernetes/ingress-nginx](https://github.com/kubernetes/ingress-nginx)
 
 ## Prerequisites
 
 Installation was tested with versions:
-- ingress-nginx v1.10.0
-- helm chart 4.10.0
-- helm cli >= 3.0
+- ingress-nginx v1.9.6
+- helm chart 4.9.1
 - OpenShift 3 or 4
 
 Cluster requirements
 - Min 3x worker nodes for ingress-nginx controller copies.
-- Worker nodes labeled with ingress-controller=ingress-nginx.
+- Worker nodes labeled with **ingress-controller=ingress-nginx**.
 - External load balancer with direct access to worker nodes IPs and ports in range 30000-32767.
+
+Installation environment:
+- Linux (preferably) or Windows-based system
+- oc or kubectl cli (they can be used interchangeably)
+- helm cli >= 3.0
 
 Diagram:
 
 ![ingress-nginx schema](ingress-nginx-openshift.drawio.png "ingress-nginx")
 
-The following images should be transferred to locally available registry if cluster nodes have not direct access to internet:
-- registry.k8s.io/ingress-nginx/controller:v1.10.0
-- registry.k8s.io/ingress-nginx/kube-webhook-certgen:v1.4.1
+The following images should be transferred to the locally available registry if cluster nodes do not have direct access to the internet:
+- registry.k8s.io/ingress-nginx/controller:v1.9.4
 
-The instruction of how to transfer images to local repository is available at: [Copy images from public registries to local one](../podman/podman-copy-images.md)
+The instructions on how to transfer images to the local repository are available at: [Copy images from public registries to local one](../podman/podman-copy-images.md)
 
 ## Installation
 
@@ -34,8 +37,8 @@ The mentioned installation process was performed on the Linux host with direct a
 1. Download the chart:
 
 ```bash
-wget https://github.com/kubernetes/ingress-nginx/releases/download/helm-chart-4.10.0/ingress-nginx-4.10.0.tgz
-tar zxf ingress-nginx-4.10.0.tgz
+wget https://github.com/kubernetes/ingress-nginx/releases/download/helm-chart-4.9.1/ingress-nginx-4.9.1.tgz
+tar zxf ingress-nginx-4.9.1.tgz
 cd ingress-nginx
 ```
 
@@ -120,7 +123,7 @@ controller:
   image:
     registry: <local_registry_url>
     image: ingress-nginx/controller
-    tag: "v1.10.0"
+    tag: "v1.9.6"
     digest: ""
   allowSnippetAnnotations: true
   kind: DaemonSet
@@ -133,32 +136,24 @@ controller:
       http: "30080"
       https: "30443"
   admissionWebhooks:
-    patch:
-      image:
-        registry: <local_registry_url>
-        image: ingress-nginx/kube-webhook-certgen
-        tag: v1.4.1
-        digest: ""
-      nodeSelector:
-        kubernetes.io/os: linux
-        ingress-controller: ingress-nginx
+    enabled: false
 ```
 
 4. Label nodes where ingress-nginx PODs will be scheduled:
 
 ```bash
 kubectl label node <nodeName> ingress-controller=ingress-nginx
-# repeat on every node
+# Repeat on every node
 ```
 
-5. Install ingress-nginx in its own namespace:
+5. Install ingress-nginx in its namespace:
 
 ```bash
 # check if templates are correctly rendered
 helm template -n ingress-nginx ingress-nginx . -f values-custom.yaml
 
 # install
-helm install -n ingress-nginx ingress-nginx . -f values-custom.yaml
+helm install -n ingress-nginx ingress-nginx . -f values-custom.yaml --create-namespace
 ```
 
 ## Validation
@@ -230,7 +225,7 @@ spec:
             path: /
 ```
 
-3. Run the test call towards External Load Balancer IP with custom Host header to allow ingress-controller route the request to your application:
+3. Run the test call towards the External Load Balancer IP with a custom Host header to allow ingress-controller to route the request to your application:
 
 ```bash
 curl -H "Host: httpbin.com" http://<LoadBalancerIP>/get
