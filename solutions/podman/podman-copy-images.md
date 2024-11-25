@@ -9,11 +9,11 @@ podman pull registry.k8s.io/ingress-nginx/controller:v1.10.0
 2. Tag with new registry name:
 
 ```bash
-podman tag registry.k8s.io/ingress-nginx/controller:v1.10.0 <your_registry>/registry.k8s.io/ingress-nginx/controller:v1.10.0
+podman tag registry.k8s.io/ingress-nginx/controller:v1.10.0 <your_registry>/ingress-nginx/controller:v1.10.0
 ```
 
 3. Push to local registry:
 
 ```bash
-podman push <your_registry>/registry.k8s.io/ingress-nginx/controller:v1.10.0
+podman push <your_registry>/ingress-nginx/controller:v1.10.0
 ```
